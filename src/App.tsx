@@ -1,11 +1,26 @@
-import { useState } from 'react';
+// MODIFIED: import useEffect
+import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: 'Submit Hackathon Project', deadline: '2025-09-15', completed: false },
-    { id: 2, title: 'Read React documentation', deadline: '2025-09-10', completed: false },
-  ]);
+  // const [tasks, setTasks] = useState([
+  //   // MODIFIED: Added 'completed: false' to each task
+  //   { id: 1, title: 'Submit Hackathon Project', deadline: '2025-09-15', completed: false },
+  //   { id: 2, title: 'Read React documentation', deadline: '2025-09-10', completed: false },
+  // ]);
+
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem('tasks');
+    if (savedTasks) {
+      return JSON.parse(savedTasks);
+    } else {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   const [newTitle, setNewTitle] = useState('');
 
@@ -54,6 +69,7 @@ function App() {
         {tasks.map(task => (
           <li key={task.id} className={task.completed ? 'completed' : ''}>
             {task.title} - (Deadline: {task.deadline})
+            
             <button onClick={() => handleToggleComplete(task.id)}>
               {task.completed ? 'Undo' : 'Done'}
             </button>
