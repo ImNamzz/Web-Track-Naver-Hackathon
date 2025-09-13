@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Tree from './Tree';
+import html2canvas from 'html2canvas';
 import Certificate from './Certificate';
 import './App.css';
 
@@ -103,7 +104,20 @@ function App() {
     }
   };
   const handleMint = () => {
-    alert('Test minting');
+    if (certificateRef.current) {
+      html2canvas(certificateRef.current, { 
+        scale: 2 
+      }).then(canvas => {
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `tree-of-achievement-${taskToMint?.id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTaskToMint(null);
+      });
+    }
   };
 
   const handleAddCategory = (event: React.FormEvent) => {
@@ -130,13 +144,23 @@ function App() {
     setCategories(updatedCategories);
   };
   
-  const calculatePriority = (task) => {
+  const calculatePriority = (task: Task): number => {
     if (task.completed) return 0;
-    const daysRemaining = (new Date(task.deadline) - new Date()) / (1000 * 60 * 60 * 24);
+    const daysRemaining = (new Date(task.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
     if (daysRemaining < 0) return 100;
     return 1 / (daysRemaining + 0.1);
   };
-  let tasksToDisplay = tasks;
+  let tasksToDisplay: Task[] = tasks;
+
+  if (view === 'completed') {
+    tasksToDisplay = tasks.filter(task => task.completed);
+  } else if (view === 'pending') {
+    tasksToDisplay = tasks.filter(task => !task.completed);
+  } else if (view === 'smart') {
+    tasksToDisplay = tasks.filter(task => !task.completed)
+      .slice()
+      .sort((a, b) => calculatePriority(b) - calculatePriority(a));
+  }
 
   return (
     <div className="App">
@@ -174,7 +198,7 @@ function App() {
       </div>
 
       <ul>
-        {tasks.map(task => {
+        {tasksToDisplay.map(task => {
           const category = categories.find(c => c.id === task.categoryId);
           return (
             <li key={task.id} className={task.completed ? 'completed' : ''}>
