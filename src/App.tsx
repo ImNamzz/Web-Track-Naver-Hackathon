@@ -1,15 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
+import Tree from './Tree';
+import Certificate from './Certificate';
+import './App.css';
+
+interface Task {
+  id: number;
+  title: string;
+  deadline: string;
+  completed: boolean;
+  categoryId: number;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  keywords: string[];
+}
 
 function App() {
   // --- States & Storage ---
-  const [tasks, setTasks] = useState(() => {
+  const [tasks, setTasks] = useState<Task[]>(() => {
     const savedTasks = localStorage.getItem('tasks');
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
   useEffect(() => { localStorage.setItem('tasks', JSON.stringify(tasks)); }, [tasks]);
 
-  const [categories, setCategories] = useState(() => {
+  const [categories, setCategories] = useState<Category[]>(() => {
     const savedCategories = localStorage.getItem('categories');
     if (savedCategories) {
       return JSON.parse(savedCategories);
@@ -29,7 +46,11 @@ function App() {
   const [view, setView] = useState('all');
   const [newCategoryName, setNewCategoryName] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
-  const [newKeyword, setNewKeyword] = useState({});
+  const [newKeyword, setNewKeyword] = useState<Record<number, string>>({});
+  const [taskToMint, setTaskToMint] = useState<any | null>(null);
+  const [mintedTreeProps, setMintedTreeProps] = useState({});
+  const certificateRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     const titleLower = newTitle.toLowerCase();
@@ -46,7 +67,7 @@ function App() {
     }
   }, [newTitle, categories]);
 
-  const handleAddTask = (event) => {
+  const handleAddTask = (event: React.FormEvent) => {
     event.preventDefault();
     if (newTitle.trim() === '' || newDeadline === '' || selectedCategoryId === '') {
       alert("You might want a title(or deadlines (or both)).");
@@ -58,19 +79,43 @@ function App() {
     setNewDeadline('');
     setSelectedCategoryId('');
   };
-  const handleDeleteTask = (idToDelete) => { setTasks(tasks.filter(task => task.id !== idToDelete)); };
-  const handleToggleComplete = (idToToggle) => { setTasks(tasks.map(task => task.id === idToToggle ? { ...task, completed: !task.completed } : task)); };
 
-  const handleAddCategory = (event) => {
+  const handleDeleteTask = (idToDelete: number) => { setTasks(tasks.filter(task => task.id !== idToDelete)); };
+  const handleToggleComplete = (idToToggle: number) => {
+    let completedTask = null;
+    const updatedTasks = tasks.map(task => {
+      if (task.id === idToToggle) {
+        const updatedTask = { ...task, completed: !task.completed };
+        if (updatedTask.completed) {
+          completedTask = updatedTask;
+        }
+        return updatedTask;
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+
+    if (completedTask) {
+      const randomLeafColor = ['#2ecc71', '#f1c40f', '#e74c3c', '#9b59b6'][Math.floor(Math.random() * 4)];
+      const randomTrunkWidth = 8 + Math.random() * 8;
+      setMintedTreeProps({ leafColor: randomLeafColor, trunkWidth: randomTrunkWidth });
+      setTaskToMint(completedTask);
+    }
+  };
+  const handleMint = () => {
+    alert('Test minting');
+  };
+
+  const handleAddCategory = (event: React.FormEvent) => {
     event.preventDefault();
     if (newCategoryName.trim() === '') return;
     const newCategory = { id: Date.now(), name: newCategoryName, keywords: [] };
     setCategories([...categories, newCategory]);
     setNewCategoryName('');
   };
-  const handleDeleteCategory = (idToDelete) => { setCategories(categories.filter(category => category.id !== idToDelete)); };
+  const handleDeleteCategory = (idToDelete: number) => { setCategories(categories.filter(category => category.id !== idToDelete)); };
 
-  const handleAddKeyword = (categoryId) => {
+  const handleAddKeyword = (categoryId: number) => {
     const keywordText = newKeyword[categoryId]?.trim();
     if (!keywordText) return;
     const updatedCategories = categories.map(category => {
@@ -80,11 +125,8 @@ function App() {
     setCategories(updatedCategories);
     setNewKeyword({ ...newKeyword, [categoryId]: '' });
   };
-  const handleDeleteKeyword = (categoryId, keywordToDelete) => {
-    const updatedCategories = categories.map(category => {
-      if (category.id === categoryId) { return { ...category, keywords: category.keywords.filter(kw => kw !== keywordToDelete) }; }
-      return category;
-    });
+  const handleDeleteKeyword = (categoryId: number, keywordToDelete: string) => {
+    const updatedCategories = categories.map(c => c.id === categoryId ? { ...c, keywords: c.keywords.filter(kw => kw !== keywordToDelete) } : c);
     setCategories(updatedCategories);
   };
   
@@ -98,8 +140,22 @@ function App() {
 
   return (
     <div className="App">
+      {taskToMint && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <Certificate 
+              task={taskToMint} 
+              treeProps={mintedTreeProps}
+              forwardedRef={certificateRef} 
+            />
+            <div className="modal-actions">
+              <button onClick={handleMint}>Mint & Download</button>
+              <button onClick={() => setTaskToMint(null)} className="close-button">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
       <h1>Smart Task Manager</h1>
-      
       <form onSubmit={handleAddTask}>
         <input type="text" placeholder="What you don't want to miss?" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
         <input type="date" value={newDeadline} onChange={(e) => setNewDeadline(e.target.value)} />
@@ -131,7 +187,7 @@ function App() {
       </ul>
       
       <hr /> 
-
+      <Tree /> {/*Test */}
       <div className="category-manager">
         <h2>Manage Categories</h2>
         <form onSubmit={handleAddCategory}>

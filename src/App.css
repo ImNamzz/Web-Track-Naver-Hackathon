@@ -17,9 +17,9 @@
 
 .category-manager > ul > li {
   display: flex;
-  flex-direction: column; /* Changed to column for nesting */
+  flex-direction: column;
   justify-content: space-between;
-  align-items: flex-start; /* Aligned to the start */
+  align-items: flex-start;
   padding: 8px;
   border-bottom: 1px solid #eee;
 }
@@ -32,7 +32,7 @@
 }
 
 .keyword-manager {
-  width: 100%; /* Ensure it takes full width */
+  width: 100%;
   padding-left: 20px;
   margin-top: 10px;
   border-left: 2px solid #f0f0f0;
@@ -52,4 +52,38 @@
   font-size: 0.8em;
   padding: 2px 6px;
   margin-left: 8px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  font-size: 1em;
+}
+
+.modal-actions .close-button {
+  background-color: #ccc;
 }
