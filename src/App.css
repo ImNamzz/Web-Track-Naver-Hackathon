@@ -2,3 +2,54 @@
   text-decoration: line-through;
   color: grey;
 }
+
+.category-manager {
+  margin-top: 40px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.category-manager ul {
+  list-style: none;
+  padding: 0;
+}
+
+.category-manager > ul > li {
+  display: flex;
+  flex-direction: column; /* Changed to column for nesting */
+  justify-content: space-between;
+  align-items: flex-start; /* Aligned to the start */
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  width: 100%;
+}
+
+.keyword-manager {
+  width: 100%; /* Ensure it takes full width */
+  padding-left: 20px;
+  margin-top: 10px;
+  border-left: 2px solid #f0f0f0;
+}
+
+.keyword-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9em;
+  color: #555;
+  border-bottom: none;
+  padding: 4px;
+}
+
+.keyword-item button {
+  font-size: 0.8em;
+  padding: 2px 6px;
+  margin-left: 8px;
+}
