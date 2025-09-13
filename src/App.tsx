@@ -31,6 +31,21 @@ function App() {
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [newKeyword, setNewKeyword] = useState({});
 
+  useEffect(() => {
+    const titleLower = newTitle.toLowerCase();
+    if (!titleLower.trim()) {
+      return;
+    }
+    for (const category of categories) {
+      for (const keyword of category.keywords) {
+        if (titleLower.includes(keyword.toLowerCase())) {
+          setSelectedCategoryId(category.id.toString());
+          return;
+        }
+      }
+    }
+  }, [newTitle, categories]);
+
   const handleAddTask = (event) => {
     event.preventDefault();
     if (newTitle.trim() === '' || newDeadline === '' || selectedCategoryId === '') {
