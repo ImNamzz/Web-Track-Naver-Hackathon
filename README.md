@@ -74,3 +74,10 @@ The special thing about TaskGarden is its focus on positive reinforcement and re
 - Make more Tree SVGs. Turn them into quest in order to achieve the Tree.
 ### b. If you integrate AI APIs more for your app, what would you do?
 
+
+ - Advanced NLP for Task Creation: I would use a powerful NLP API to allow users to create tasks with natural language. For example, a user could type "remind me to submit the exam next Friday before 5pm." and the AI would automatically parse the title, deadline, and time. This would be my top priority if I had a chance (and budget) to implement this. Because to my prior experience, most user tends to quit these kind of app because of their laziness.
+
+ - Generative Tree Art: I would integrate a generative AI image model to create truly unique and complex art for each "Tree of Achievement" based on the content of the task itself, and Trees drawn by hand (which is more realistic) will be harder to earn.
+
+ - Personalized Productivity Coach: I would use a predictive model to analyze a user's completion patterns and proactively offer tips. For example: "It looks like you often leave 'Study' tasks for the last day. Try starting this one a bit earlier"
+
